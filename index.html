@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Site speak</title>
+    <link href="styles/reset.css" rel="stylesheet">
+    <link href="styles/custom.css" rel="stylesheet">
+    <link href="styles/bootstrap.css" rel="stylesheet">
+  </head>
+  <body>
+    <div class="container">
+      <form id="myForm">
+        <div class="form-group">
+          <label for="exampleInputUsername1">Username</label>
+          <input type="text" class="form-control" id="exampleInputUsername1" placeholder="Username" data-speak="username">
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPassword1">Password</label>
+          <input type="password" class="form-control" id="exampleInputPassword1" placeholder="Password" data-speak="password">
+        </div>
+        <button type="submit" class="btn btn-default">Submit</button>
+      </form>
+    </div>
+    <script src="./modules/preload.js"></script>
+    <script src="./modules/rules.js"></script>
+    <script src="./modules/sounds.js"></script>
+    <script src="./modules/fieldsForValidation.js"></script>
+    <script src="./modules/entries.js"></script>
+    <script src="./main.js"></script>
+  </body>
+</html>
