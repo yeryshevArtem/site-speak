@@ -20,7 +20,7 @@ let rules = (function () {
         const maxLength = 10;
         const minLength = 5;
         let password = fieldForValidation.value;
-        var passwordLength = password.length;
+        let passwordLength = password.length;
         if (passwordLength === 0 || passwordLength < minLength || passwordLength > maxLength) {
           return false;
         } else {
@@ -28,5 +28,5 @@ let rules = (function () {
         }
       }
     }
-  }
+  };
 })();

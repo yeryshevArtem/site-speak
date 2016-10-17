@@ -3,5 +3,5 @@ let entries = (function () {
       for (let prop of Object.keys(obj)) {
         yield obj[prop];
       }
-    }
+    };
 })();

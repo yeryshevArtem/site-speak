@@ -3,5 +3,5 @@ let sounds = (function () {
   return {
     username_required: `${urlForErrorAudio}?text=${window.encodeURIComponent(rules.username.message)}`,
     password_required: `${urlForErrorAudio}?text=${window.encodeURIComponent(rules.password.message)}`
-  }
+  };
 })(rules);

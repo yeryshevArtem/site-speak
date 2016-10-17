@@ -15,5 +15,5 @@ let preloadAudio = (function () {
       list.push(audio);
       audio.src = urlForAudio;
     }
-  }
+  };
 })();
