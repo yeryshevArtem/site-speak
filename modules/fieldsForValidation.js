@@ -1,6 +1,4 @@
-let fieldsForValidation = (function () {
-  return {
-    username: document.getElementById('exampleInputUsername1'),
-    password: document.getElementById('exampleInputPassword1')
-  };
-})();
+export let fieldsForValidation = {
+  username: document.getElementById('exampleInputUsername1'),
+  password: document.getElementById('exampleInputPassword1')
+};

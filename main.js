@@ -1,13 +1,19 @@
-window.addEventListener('load', callback, false);
 'use strict';
-function callback () {
+import { entries } from './modules/entries.js';
+import { fieldsForValidation } from './modules/fieldsForValidation.js';
+import { rules } from './modules/rules.js';
+import { sounds } from './modules/sounds.js';
+import { preloadAudio } from './modules/preload.js';
 
+window.addEventListener('load', callback, false);
+
+function callback () {
   let preload = new Promise (function (resolve, reject) {
     resolve(preloadAudio([sounds.username_required,
       sounds.password_required,
     ]));
   });
-  
+
   preload.then(function () {
     let form = document.getElementById('myForm');
     form.addEventListener('submit', function (event) {
@@ -41,4 +47,4 @@ function callback () {
   }).catch(function (error) {
     alert(error);
   });
-};
+}
