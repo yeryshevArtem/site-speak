@@ -5,4 +5,5 @@ function* entries (obj) {
     yield obj[prop];
   }
 }
+
 export { entries };
