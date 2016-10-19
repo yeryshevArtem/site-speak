@@ -1,8 +1,10 @@
-import { entries } from './entries.js';
+import { entries } from '../entries.js';
 
-function Rules (fieldsObj) {
-  for (let field in fieldsObj) {
-    this[`${field}`] = fieldsObj[field];
+class Rules {
+  constructor(fieldsObj) {
+    for (let field in fieldsObj) {
+      this[`${field}`] = fieldsObj[field];
+    }
   }
 }
 

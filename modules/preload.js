@@ -1,4 +1,4 @@
-function preloadAudio (array) {
+function preloadAudio(array) {
   if (!preloadAudio.list) {
     preloadAudio.list = [];
   }

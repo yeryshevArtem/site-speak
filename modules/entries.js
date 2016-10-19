@@ -1,6 +1,6 @@
 import "babel-polyfill";
 
-function* entries (obj) {
+function* entries(obj) {
   for (let prop of Object.keys(obj)) {
     yield obj[prop];
   }

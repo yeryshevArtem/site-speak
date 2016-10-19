@@ -1,6 +1,6 @@
 import { preloadAudio } from './preload.js';
 
-function playInvalidField (indexOfInvalid) {
+function playInvalidField(indexOfInvalid) {
   preloadAudio.list[indexOfInvalid].play();
 }
 

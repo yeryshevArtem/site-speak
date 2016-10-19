@@ -1,9 +1,9 @@
-import { rules } from './Rules.js';
+import { rules } from './classes/Rules.js';
 import { preloadAudio } from './preload.js';
-import { Sounds } from './Sounds.js';
-import { Form } from './Form.js';
+import { Sounds } from './classes/Sounds.js';
+import { Form } from './classes/Form.js';
 
-function speechForm (formSelector) {
+function speechForm(formSelector) {
 
   // Preloading audio for each rule.
 
