@@ -11,5 +11,15 @@ function FieldsForValidation (formSelector) {
   }
   this.fields = fields;
 }
+FieldsForValidation.prototype.checkFields = function (arrayOfFields, rules) {
+  let resultsOfValidation = [];
+
+  // Looping through arrayOfFields and validate each field. Result of validation saving in resultsOfValidation.
+
+  for (let field of arrayOfFields) {
+    resultsOfValidation.push(rules[field.getAttribute('data-speak')].validate(field));
+  }
+  return resultsOfValidation;
+};
 
 export { FieldsForValidation };
