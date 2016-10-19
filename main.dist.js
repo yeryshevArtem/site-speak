@@ -9133,73 +9133,35 @@
 	});
 	exports.Form = undefined;
 
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
-
 	var _FieldsForValidation = __webpack_require__(306);
 
 	var _entries = __webpack_require__(302);
 
 	var _Rules = __webpack_require__(301);
 
-	var _preload = __webpack_require__(303);
-
 	var _Sounds = __webpack_require__(304);
+
+	var _playInvalidField = __webpack_require__(307);
 
 	function Form(selector) {
 	  this.selector = selector;
 	  this.formElement = document.querySelector(selector);
 	}
 	Form.prototype.checkForm = function (event) {
-	  var resultsOfValidation = [];
-
-	  function isValid(element, index, array) {
-	    return element === true;
-	  }
-
 	  var fieldsForValidation = new _FieldsForValidation.FieldsForValidation(this.selector);
 
-	  resultsOfValidation = fieldsForValidation.checkFields(fieldsForValidation.fields, _Rules.rules);
+	  fieldsForValidation.checkFields.apply(null, [fieldsForValidation.fields, event, _Rules.rules]).then(function (index) {
+	    if (index !== -1) {
+	      event.preventDefault();
+	      (0, _playInvalidField.playInvalidField)(index);
+	    } else {
+	      alert("Ok!");
 
-	  if (resultsOfValidation.every(isValid)) {
-	    alert('ok!');
-
-	    // Success! Send post request to server.
-	  } else {
-	    event.preventDefault();
-
-	    // Finding invalid field and playing for them corresponding audio element.
-
-	    var _iteratorNormalCompletion = true;
-	    var _didIteratorError = false;
-	    var _iteratorError = undefined;
-
-	    try {
-	      for (var _iterator = resultsOfValidation.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	        var _step$value = _slicedToArray(_step.value, 2);
-
-	        var indexOfInvalid = _step$value[0];
-	        var valueOfInvalid = _step$value[1];
-
-	        if (!valueOfInvalid) {
-	          _preload.preloadAudio.list[indexOfInvalid].play(); //promise there
-	          break;
-	        }
-	      }
-	    } catch (err) {
-	      _didIteratorError = true;
-	      _iteratorError = err;
-	    } finally {
-	      try {
-	        if (!_iteratorNormalCompletion && _iterator.return) {
-	          _iterator.return();
-	        }
-	      } finally {
-	        if (_didIteratorError) {
-	          throw _iteratorError;
-	        }
-	      }
+	      // Success! Submit form!
 	    }
-	  }
+	  }).catch(function (error) {
+	    alert(error);
+	  });
 	};
 
 	exports.Form = Form;
@@ -9213,6 +9175,9 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
+
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
 	function FieldsForValidation(formSelector) {
 	  var fields = [];
 	  var form = document.querySelector(formSelector);
@@ -9248,40 +9213,72 @@
 
 	  this.fields = fields;
 	}
-	FieldsForValidation.prototype.checkFields = function (arrayOfFields, rules) {
-	  var resultsOfValidation = [];
+	FieldsForValidation.prototype.checkFields = function () {
+	  var arrayOfFields = arguments.length <= 0 ? undefined : arguments[0];
+	  var event = arguments.length <= 1 ? undefined : arguments[1];
+	  var rules = arguments.length <= 2 ? undefined : arguments[2];
 
-	  // Looping through arrayOfFields and validate each field. Result of validation saving in resultsOfValidation.
 
-	  var _iteratorNormalCompletion2 = true;
-	  var _didIteratorError2 = false;
-	  var _iteratorError2 = undefined;
+	  return new Promise(function (resolve, reject) {
 
-	  try {
-	    for (var _iterator2 = arrayOfFields[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	      var field = _step2.value;
+	    // Looping through arrayOfFields and validate each field.
 
-	      resultsOfValidation.push(rules[field.getAttribute('data-speak')].validate(field));
-	    }
-	  } catch (err) {
-	    _didIteratorError2 = true;
-	    _iteratorError2 = err;
-	  } finally {
+	    var _iteratorNormalCompletion2 = true;
+	    var _didIteratorError2 = false;
+	    var _iteratorError2 = undefined;
+
 	    try {
-	      if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	        _iterator2.return();
+	      for (var _iterator2 = arrayOfFields.entries()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	        var _step2$value = _slicedToArray(_step2.value, 2);
+
+	        var indexOfField = _step2$value[0];
+	        var valueOfField = _step2$value[1];
+
+	        if (!rules[valueOfField.getAttribute('data-speak')].validate(valueOfField)) {
+	          resolve(indexOfField);
+	        }
 	      }
+
+	      // If all field are valid, we resolving promise with -1 arg.
+	    } catch (err) {
+	      _didIteratorError2 = true;
+	      _iteratorError2 = err;
 	    } finally {
-	      if (_didIteratorError2) {
-	        throw _iteratorError2;
+	      try {
+	        if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	          _iterator2.return();
+	        }
+	      } finally {
+	        if (_didIteratorError2) {
+	          throw _iteratorError2;
+	        }
 	      }
 	    }
-	  }
 
-	  return resultsOfValidation;
+	    resolve(-1);
+	  });
 	};
 
 	exports.FieldsForValidation = FieldsForValidation;
+
+/***/ },
+/* 307 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.playInvalidField = undefined;
+
+	var _preload = __webpack_require__(303);
+
+	function playInvalidField(indexOfInvalid) {
+	  _preload.preloadAudio.list[indexOfInvalid].play();
+	}
+
+	exports.playInvalidField = playInvalidField;
 
 /***/ }
 /******/ ]);

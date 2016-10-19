@@ -11,15 +11,24 @@ function FieldsForValidation (formSelector) {
   }
   this.fields = fields;
 }
-FieldsForValidation.prototype.checkFields = function (arrayOfFields, rules) {
-  let resultsOfValidation = [];
+FieldsForValidation.prototype.checkFields = function (...arg) {
 
-  // Looping through arrayOfFields and validate each field. Result of validation saving in resultsOfValidation.
+  let [arrayOfFields, event, rules] = [arg[0], arg[1], arg[2]];
 
-  for (let field of arrayOfFields) {
-    resultsOfValidation.push(rules[field.getAttribute('data-speak')].validate(field));
-  }
-  return resultsOfValidation;
+  return new Promise(function (resolve, reject) {
+
+    // Looping through arrayOfFields and validate each field.
+
+    for (let [indexOfField, valueOfField] of arrayOfFields.entries()) {
+      if (!rules[valueOfField.getAttribute('data-speak')].validate(valueOfField)) {
+        resolve(indexOfField);
+      }
+    }
+
+    // If all field are valid, we resolving promise with -1 arg.
+
+    resolve(-1);
+  });
 };
 
 export { FieldsForValidation };
