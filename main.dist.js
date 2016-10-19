@@ -8834,158 +8834,101 @@
 	});
 	exports.speechForm = undefined;
 
-	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+	var _Rules = __webpack_require__(301);
 
-	var _FieldsForValidation = __webpack_require__(301);
+	var _preload = __webpack_require__(303);
 
-	var _entries = __webpack_require__(302);
+	var _Sounds = __webpack_require__(304);
 
-	var _Rules = __webpack_require__(303);
-
-	var _preload = __webpack_require__(304);
-
-	var _Sounds = __webpack_require__(305);
+	var _Form = __webpack_require__(305);
 
 	function speechForm(formSelector) {
 
-	  // Preloading all audio.
+	  // Preloading audio for each rule.
 
 	  var soundsList = new _Sounds.Sounds(_Rules.rules).getList();
 	  (0, _preload.preloadAudio)(soundsList);
 
 	  // Getting form element and attaching to them listener.
 
-	  var form = document.querySelector(formSelector);
+	  var form = new _Form.Form(formSelector);
 
-	  form.addEventListener('submit', checkingForm, false);
-
-	  function checkingForm(event) {
-	    var resultsOfValidation = [];
-
-	    function isValid(element, index, array) {
-	      return element === true;
-	    }
-
-	    // Looping through object and validate each field. Result of validation saving in resultsOfValidation.
-
-	    var fieldsForValidation = new _FieldsForValidation.FieldsForValidation(formSelector).fields;
-
-	    var _iteratorNormalCompletion = true;
-	    var _didIteratorError = false;
-	    var _iteratorError = undefined;
-
-	    try {
-	      for (var _iterator = fieldsForValidation[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	        var field = _step.value;
-
-	        resultsOfValidation.push(_Rules.rules[field.getAttribute('data-speak')].validate(field));
-	      }
-	    } catch (err) {
-	      _didIteratorError = true;
-	      _iteratorError = err;
-	    } finally {
-	      try {
-	        if (!_iteratorNormalCompletion && _iterator.return) {
-	          _iterator.return();
-	        }
-	      } finally {
-	        if (_didIteratorError) {
-	          throw _iteratorError;
-	        }
-	      }
-	    }
-
-	    if (resultsOfValidation.every(isValid)) {
-	      alert('ok!');
-
-	      // Send post request to server.
-	    } else {
-	      event.preventDefault();
-
-	      // Finding invalid field and playing for them corresponding audio element.
-
-	      var _iteratorNormalCompletion2 = true;
-	      var _didIteratorError2 = false;
-	      var _iteratorError2 = undefined;
-
-	      try {
-	        for (var _iterator2 = resultsOfValidation.entries()[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
-	          var _step2$value = _slicedToArray(_step2.value, 2);
-
-	          var indexOfInvalid = _step2$value[0];
-	          var valueOfInvalid = _step2$value[1];
-
-	          if (!valueOfInvalid) {
-	            _preload.preloadAudio.list[indexOfInvalid].play(); //promise there
-	            break;
-	          }
-	        }
-	      } catch (err) {
-	        _didIteratorError2 = true;
-	        _iteratorError2 = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion2 && _iterator2.return) {
-	            _iterator2.return();
-	          }
-	        } finally {
-	          if (_didIteratorError2) {
-	            throw _iteratorError2;
-	          }
-	        }
-	      }
-	    }
-	  }
+	  form.formElement.addEventListener('submit', function (event) {
+	    form.checkForm(event);
+	  }, false);
 	}
 
 	exports.speechForm = speechForm;
 
 /***/ },
 /* 301 */
-/***/ function(module, exports) {
+/***/ function(module, exports, __webpack_require__) {
 
-	"use strict";
+	'use strict';
 
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	function FieldsForValidation(formSelector) {
-	  var fields = [];
-	  var form = document.querySelector(formSelector);
-	  var allInputs = document.querySelectorAll("input");
-	  var _iteratorNormalCompletion = true;
-	  var _didIteratorError = false;
-	  var _iteratorError = undefined;
+	exports.rules = undefined;
 
-	  try {
-	    for (var _iterator = allInputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	      var input = _step.value;
+	var _entries = __webpack_require__(302);
 
-	      if (form.contains(input)) {
-	        if (input.hasAttribute("data-speak")) {
-	          fields.push(input);
-	        }
-	      }
-	    }
-	  } catch (err) {
-	    _didIteratorError = true;
-	    _iteratorError = err;
-	  } finally {
-	    try {
-	      if (!_iteratorNormalCompletion && _iterator.return) {
-	        _iterator.return();
-	      }
-	    } finally {
-	      if (_didIteratorError) {
-	        throw _iteratorError;
-	      }
-	    }
+	function Rules(fieldsObj) {
+	  for (var field in fieldsObj) {
+	    this['' + field] = fieldsObj[field];
 	  }
-
-	  this.fields = fields;
 	}
 
-	exports.FieldsForValidation = FieldsForValidation;
+	function usernameValidation(fieldForValidation) {
+	  var username = fieldForValidation.value;
+	  var usernameFormat = /^\w+$/ig;
+	  if (username.match(usernameFormat)) {
+	    return true;
+	  } else {
+	    return false;
+	  }
+	}
+	function passwordValidation(fieldForValidation) {
+	  var maxLength = 10;
+	  var minLength = 5;
+
+	  var password = fieldForValidation.value;
+	  var passwordLength = password.length;
+	  if (passwordLength === 0 || passwordLength < minLength || passwordLength > maxLength) {
+	    return false;
+	  } else {
+	    return true;
+	  }
+	}
+	function emailValidation(fieldForValidation) {
+	  var email = fieldForValidation.value;
+	  var emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	  if (!emailFormat.test(email)) {
+	    return false;
+	  } else {
+	    return true;
+	  }
+	}
+
+	var rules = new Rules({
+	  username: {
+	    type: 'required',
+	    message: 'This field is required. Username',
+	    validate: usernameValidation
+	  },
+	  password: {
+	    type: 'required',
+	    message: 'This field is required. Password',
+	    validate: passwordValidation
+	  },
+	  email: {
+	    type: 'required',
+	    message: 'This field is required. Email',
+	    validate: emailValidation
+	  }
+	});
+
+	exports.rules = rules;
 
 /***/ },
 /* 302 */
@@ -9078,116 +9021,6 @@
 /* 303 */
 /***/ function(module, exports) {
 
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	var rules = exports.rules = {
-	  username: {
-	    type: 'required',
-	    message: 'This field is required. Username',
-	    validate: function validate(fieldForValidation) {
-	      var username = fieldForValidation.value;
-	      var usernameFormat = /^\w+$/ig;
-	      if (username.match(usernameFormat)) {
-	        return true;
-	      } else {
-	        return false;
-	      }
-	    }
-	  },
-	  password: {
-	    type: 'required',
-	    message: 'This field is required. Password',
-	    validate: function validate(fieldForValidation) {
-	      var maxLength = 10;
-	      var minLength = 5;
-
-	      var password = fieldForValidation.value;
-	      var passwordLength = password.length;
-	      if (passwordLength === 0 || passwordLength < minLength || passwordLength > maxLength) {
-	        return false;
-	      } else {
-	        return true;
-	      }
-	    }
-	  },
-	  email: {
-	    type: 'required',
-	    message: 'This field is required. Email',
-	    validate: function validate(fieldForValidation) {
-	      var email = fieldForValidation.value;
-	      var emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	      if (!emailFormat.test(email)) {
-	        return false;
-	      } else {
-	        return true;
-	      }
-	    }
-	  }
-	};
-
-	// function usernameValidation (fieldForValidation) {
-	//   let username = fieldForValidation.value;
-	//   const usernameFormat = /^\w+$/ig;
-	//   if (username.match(usernameFormat)) {
-	//     return true;
-	//   } else {
-	//     return false;
-	//   }
-	// }
-	// function passwordValidation (fieldForValidation) {
-	//   const [maxLength, minLength] = [10, 5];
-	//   let password = fieldForValidation.value;
-	//   let passwordLength = password.length;
-	//   if (passwordLength === 0 || passwordLength < minLength || passwordLength > maxLength) {
-	//     return false;
-	//   } else {
-	//     return true;
-	//   }
-	// }
-	// function emailValidation (fieldForValidation) {
-	//   let email = fieldForValidation.value;
-	//   var emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	//   if (!emailFormat.test(email)) {
-	//     return false;
-	//   } else {
-	//     return true;
-	//   }
-	// }
-	//
-	// function Rules (fields, arrayOfRulesType, arrayOfmessage, arrayOfValidateFunction) {
-	//   let self = this;
-	//   for (var i=0; i<fields.length; i++) {
-	//     this[`${fields[i]}`] = new Object();
-	//     for (let rule of arrayOfRulesType) {
-	//       this[`${fields[i]}`].type = rule;
-	//     }
-	//     for (let message of arrayOfmessage) {
-	//       this[`${fields[i]}`].message = message;
-	//     }
-	//     for (let validateFunction of arrayOfValidateFunction) {
-	//       this[`${fields[i]}`].validate = validateFunction;
-	//     }
-	//   }
-	// }
-	//
-	//
-	//
-	// let rules = new Rules(
-	//   ['username', 'password', 'email'],
-	//   ['required'],
-	//   ['This field is required. Username', 'This field is required. Password', 'This field is required. Email'],
-	//   [usernameValidation, passwordValidation, emailValidation]
-	// );
-	// console.log(rules);
-	// export { rules };
-
-/***/ },
-/* 304 */
-/***/ function(module, exports) {
-
 	"use strict";
 
 	Object.defineProperty(exports, "__esModule", {
@@ -9235,7 +9068,7 @@
 	exports.preloadAudio = preloadAudio;
 
 /***/ },
-/* 305 */
+/* 304 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9251,7 +9084,7 @@
 
 	function Sounds(rulesList) {
 
-	  // Looping through all props of 'rulesList' object ('username', 'email', etc.) and each keys of props from 'rulesList' object set to 'Sounds' instance props.
+	  // Looping through all props of 'rulesList' object ('username', 'email', etc.) and each key of props from 'rulesList' object set to  instance of 'Sounds' props.
 
 	  for (var rule in rulesList) {
 	    this[rule + '_required'] = urlForErrorAudio + '?text=' + window.encodeURIComponent(rulesList[rule].message);
@@ -9288,6 +9121,167 @@
 	};
 
 	exports.Sounds = Sounds;
+
+/***/ },
+/* 305 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Form = undefined;
+
+	var _slicedToArray = function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i["return"]) _i["return"](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError("Invalid attempt to destructure non-iterable instance"); } }; }();
+
+	var _FieldsForValidation = __webpack_require__(306);
+
+	var _entries = __webpack_require__(302);
+
+	var _Rules = __webpack_require__(301);
+
+	var _preload = __webpack_require__(303);
+
+	var _Sounds = __webpack_require__(304);
+
+	function Form(selector) {
+	  this.selector = selector;
+	  this.formElement = document.querySelector(selector);
+	}
+	Form.prototype.checkForm = function (event) {
+	  var resultsOfValidation = [];
+
+	  function isValid(element, index, array) {
+	    return element === true;
+	  }
+
+	  var fieldsForValidation = new _FieldsForValidation.FieldsForValidation(this.selector);
+
+	  resultsOfValidation = fieldsForValidation.checkFields(fieldsForValidation.fields, _Rules.rules);
+
+	  if (resultsOfValidation.every(isValid)) {
+	    alert('ok!');
+
+	    // Success! Send post request to server.
+	  } else {
+	    event.preventDefault();
+
+	    // Finding invalid field and playing for them corresponding audio element.
+
+	    var _iteratorNormalCompletion = true;
+	    var _didIteratorError = false;
+	    var _iteratorError = undefined;
+
+	    try {
+	      for (var _iterator = resultsOfValidation.entries()[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	        var _step$value = _slicedToArray(_step.value, 2);
+
+	        var indexOfInvalid = _step$value[0];
+	        var valueOfInvalid = _step$value[1];
+
+	        if (!valueOfInvalid) {
+	          _preload.preloadAudio.list[indexOfInvalid].play(); //promise there
+	          break;
+	        }
+	      }
+	    } catch (err) {
+	      _didIteratorError = true;
+	      _iteratorError = err;
+	    } finally {
+	      try {
+	        if (!_iteratorNormalCompletion && _iterator.return) {
+	          _iterator.return();
+	        }
+	      } finally {
+	        if (_didIteratorError) {
+	          throw _iteratorError;
+	        }
+	      }
+	    }
+	  }
+	};
+
+	exports.Form = Form;
+
+/***/ },
+/* 306 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	function FieldsForValidation(formSelector) {
+	  var fields = [];
+	  var form = document.querySelector(formSelector);
+	  var allInputs = document.querySelectorAll("input");
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
+
+	  try {
+	    for (var _iterator = allInputs[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var input = _step.value;
+
+	      if (form.contains(input)) {
+	        if (input.hasAttribute("data-speak")) {
+	          fields.push(input);
+	        }
+	      }
+	    }
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
+	      }
+	    }
+	  }
+
+	  this.fields = fields;
+	}
+	FieldsForValidation.prototype.checkFields = function (arrayOfFields, rules) {
+	  var resultsOfValidation = [];
+
+	  // Looping through arrayOfFields and validate each field. Result of validation saving in resultsOfValidation.
+
+	  var _iteratorNormalCompletion2 = true;
+	  var _didIteratorError2 = false;
+	  var _iteratorError2 = undefined;
+
+	  try {
+	    for (var _iterator2 = arrayOfFields[Symbol.iterator](), _step2; !(_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done); _iteratorNormalCompletion2 = true) {
+	      var field = _step2.value;
+
+	      resultsOfValidation.push(rules[field.getAttribute('data-speak')].validate(field));
+	    }
+	  } catch (err) {
+	    _didIteratorError2 = true;
+	    _iteratorError2 = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion2 && _iterator2.return) {
+	        _iterator2.return();
+	      }
+	    } finally {
+	      if (_didIteratorError2) {
+	        throw _iteratorError2;
+	      }
+	    }
+	  }
+
+	  return resultsOfValidation;
+	};
+
+	exports.FieldsForValidation = FieldsForValidation;
 
 /***/ }
 /******/ ]);

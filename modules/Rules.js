@@ -1,5 +1,11 @@
 import { entries } from './entries.js';
 
+function Rules (fieldsObj) {
+  for (let field in fieldsObj) {
+    this[`${field}`] = fieldsObj[field];
+  }
+}
+
 function usernameValidation (fieldForValidation) {
   let username = fieldForValidation.value;
   const usernameFormat = /^\w+$/ig;
@@ -26,12 +32,6 @@ function emailValidation (fieldForValidation) {
     return false;
   } else {
     return true;
-  }
-}
-
-function Rules (fieldsObj) {
-  for (let field in fieldsObj) {
-    this[`${field}`] = fieldsObj[field];
   }
 }
 
