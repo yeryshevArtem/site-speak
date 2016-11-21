@@ -25,7 +25,7 @@ class FieldsForValidation {
         }
       }
 
-      // If all field are valid, we resolving promise with -1 arg.
+      // If all fields are valid, we resolving promise with -1 arg.
 
       resolve(-1);
     });

@@ -1,9 +1,8 @@
-import { rules } from './classes/Rules.js';
 import { preloadAudio } from './preload.js';
 import { Sounds } from './classes/Sounds.js';
 import { Form } from './classes/Form.js';
 
-function speechForm(formSelector) {
+function speechForm(formSelector, rules) {
 
   // Preloading audio for each rule.
 
@@ -15,7 +14,7 @@ function speechForm(formSelector) {
   let form = new Form(formSelector);
 
   form.formElement.addEventListener('submit', function (event) {
-    form.checkForm(event);
+    form.checkForm(event, rules);
   }, false);
 }
 

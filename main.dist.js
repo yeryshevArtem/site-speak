@@ -9088,7 +9088,7 @@
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var urlForErrorAudio = 'http://172.16.208.7:8988/';
+	var urlForErrorAudio = 'http://172.16.208.7:1223';
 
 	var Sounds = function () {
 	  function Sounds(rulesList) {

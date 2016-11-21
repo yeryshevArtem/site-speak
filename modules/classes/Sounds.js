@@ -1,6 +1,6 @@
 import { entries } from '../entries.js';
 
-const urlForErrorAudio = 'http://172.16.208.7:8988/';
+const urlForErrorAudio = 'http://172.16.208.7:1223';
 
 class Sounds {
   constructor(rulesList) {
