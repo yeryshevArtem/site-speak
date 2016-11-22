@@ -1,11 +1,12 @@
 import { entries } from '../entries.js';
 
-const urlForErrorAudio = 'http://172.16.208.7:1223';
+const urlForErrorAudio = 'https://something-speach.herokuapp.com';
 
 class Sounds {
   constructor(rulesList) {
 
-    // Looping through all props of 'rulesList' object ('username', 'email', etc.) and each key of props from 'rulesList' object set to  instance of 'Sounds' props.
+    /* Looping through all props of 'rulesList' object ('username', 'email', etc.)
+    and each key of props from 'rulesList' object set to  instance of 'Sounds' props. */
 
     for (let rule in rulesList) {
       this[`${rule}_required`] = `${urlForErrorAudio}?text=${window.encodeURIComponent(rulesList[rule].message)}`;

@@ -8817,10 +8817,31 @@
 
 	var _speechForm = __webpack_require__(300);
 
+	var _Rules = __webpack_require__(307);
+
+	var _validateFunctions = __webpack_require__(308);
+
 	window.addEventListener('load', callback, false);
 
 	function callback() {
-	  (0, _speechForm.speechForm)("#myForm");
+	  var rules = new _Rules.Rules({
+	    username: {
+	      type: 'required',
+	      message: 'This field is required. Username',
+	      validate: _validateFunctions.validateFunctions.usernameValidation
+	    },
+	    password: {
+	      type: 'required',
+	      message: 'This field is required. Password',
+	      validate: _validateFunctions.validateFunctions.passwordValidation
+	    },
+	    email: {
+	      type: 'required',
+	      message: 'This field is required. Email',
+	      validate: _validateFunctions.validateFunctions.emailValidation
+	    }
+	  });
+	  (0, _speechForm.speechForm)("#myForm", rules);
 	}
 
 /***/ },
@@ -8834,19 +8855,18 @@
 	});
 	exports.speechForm = undefined;
 
-	var _Rules = __webpack_require__(301);
+	var _preload = __webpack_require__(301);
 
-	var _preload = __webpack_require__(303);
+	var _Sounds = __webpack_require__(302);
 
-	var _Sounds = __webpack_require__(304);
+	var _Form = __webpack_require__(304);
 
-	var _Form = __webpack_require__(305);
-
-	function speechForm(formSelector) {
+	function speechForm(formSelector, rules) {
+	  console.log('start');
 
 	  // Preloading audio for each rule.
 
-	  var soundsList = new _Sounds.Sounds(_Rules.rules).getList();
+	  var soundsList = new _Sounds.Sounds(rules).getList();
 	  (0, _preload.preloadAudio)(soundsList);
 
 	  // Getting form element and attaching to them listener.
@@ -8854,7 +8874,7 @@
 	  var form = new _Form.Form(formSelector);
 
 	  form.formElement.addEventListener('submit', function (event) {
-	    form.checkForm(event);
+	    form.checkForm(event, rules);
 	  }, false);
 	}
 
@@ -8862,6 +8882,56 @@
 
 /***/ },
 /* 301 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	function preloadAudio(array) {
+	  if (!preloadAudio.list) {
+	    preloadAudio.list = [];
+	  }
+	  var list = preloadAudio.list;
+	  var _iteratorNormalCompletion = true;
+	  var _didIteratorError = false;
+	  var _iteratorError = undefined;
+
+	  try {
+	    for (var _iterator = array[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	      var urlForAudio = _step.value;
+
+	      var audio = new Audio();
+	      audio.onload = function () {
+	        var index = list.indexOf(this);
+	        if (index !== -1) {
+	          list.splice(index, 1);
+	        }
+	      };
+	      list.push(audio);
+	      audio.src = urlForAudio;
+	    }
+	  } catch (err) {
+	    _didIteratorError = true;
+	    _iteratorError = err;
+	  } finally {
+	    try {
+	      if (!_iteratorNormalCompletion && _iterator.return) {
+	        _iterator.return();
+	      }
+	    } finally {
+	      if (_didIteratorError) {
+	        throw _iteratorError;
+	      }
+	    }
+	  }
+	}
+
+	exports.preloadAudio = preloadAudio;
+
+/***/ },
+/* 302 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -8869,73 +8939,68 @@
 	Object.defineProperty(exports, "__esModule", {
 	  value: true
 	});
-	exports.rules = undefined;
+	exports.Sounds = undefined;
 
-	var _entries = __webpack_require__(302);
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	var _entries = __webpack_require__(303);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var Rules = function Rules(fieldsObj) {
-	  _classCallCheck(this, Rules);
+	var urlForErrorAudio = 'https://something-speach.herokuapp.com';
 
-	  for (var field in fieldsObj) {
-	    this['' + field] = fieldsObj[field];
-	  }
-	};
+	var Sounds = function () {
+	  function Sounds(rulesList) {
+	    _classCallCheck(this, Sounds);
 
-	function usernameValidation(fieldForValidation) {
-	  var username = fieldForValidation.value;
-	  var usernameFormat = /^\w+$/ig;
-	  if (username.match(usernameFormat)) {
-	    return true;
-	  } else {
-	    return false;
-	  }
-	}
-	function passwordValidation(fieldForValidation) {
-	  var maxLength = 10;
-	  var minLength = 5;
+	    // Looping through all props of 'rulesList' object ('username', 'email', etc.) and each key of props from 'rulesList' object set to  instance of 'Sounds' props.
 
-	  var password = fieldForValidation.value;
-	  var passwordLength = password.length;
-	  if (passwordLength === 0 || passwordLength < minLength || passwordLength > maxLength) {
-	    return false;
-	  } else {
-	    return true;
+	    for (var rule in rulesList) {
+	      console.log('wooow');
+	      this[rule + '_required'] = urlForErrorAudio + '?text=' + window.encodeURIComponent(rulesList[rule].message);
+	    }
 	  }
-	}
-	function emailValidation(fieldForValidation) {
-	  var email = fieldForValidation.value;
-	  var emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	  if (!emailFormat.test(email)) {
-	    return false;
-	  } else {
-	    return true;
-	  }
-	}
 
-	var rules = new Rules({
-	  username: {
-	    type: 'required',
-	    message: 'This field is required. Username',
-	    validate: usernameValidation
-	  },
-	  password: {
-	    type: 'required',
-	    message: 'This field is required. Password',
-	    validate: passwordValidation
-	  },
-	  email: {
-	    type: 'required',
-	    message: 'This field is required. Email',
-	    validate: emailValidation
-	  }
-	});
+	  _createClass(Sounds, [{
+	    key: 'getList',
+	    value: function getList() {
+	      var soundsList = [];
+	      var _iteratorNormalCompletion = true;
+	      var _didIteratorError = false;
+	      var _iteratorError = undefined;
 
-	exports.rules = rules;
+	      try {
+	        for (var _iterator = (0, _entries.entries)(this)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
+	          var sound = _step.value;
+
+	          soundsList.push(sound);
+	        }
+	      } catch (err) {
+	        _didIteratorError = true;
+	        _iteratorError = err;
+	      } finally {
+	        try {
+	          if (!_iteratorNormalCompletion && _iterator.return) {
+	            _iterator.return();
+	          }
+	        } finally {
+	          if (_didIteratorError) {
+	            throw _iteratorError;
+	          }
+	        }
+	      }
+
+	      return soundsList;
+	    }
+	  }]);
+
+	  return Sounds;
+	}();
+
+	exports.Sounds = Sounds;
 
 /***/ },
-/* 302 */
+/* 303 */
 /***/ function(module, exports, __webpack_require__) {
 
 	"use strict";
@@ -9022,125 +9087,7 @@
 	exports.entries = entries;
 
 /***/ },
-/* 303 */
-/***/ function(module, exports) {
-
-	"use strict";
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	function preloadAudio(array) {
-	  if (!preloadAudio.list) {
-	    preloadAudio.list = [];
-	  }
-	  var list = preloadAudio.list;
-	  var _iteratorNormalCompletion = true;
-	  var _didIteratorError = false;
-	  var _iteratorError = undefined;
-
-	  try {
-	    for (var _iterator = array[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	      var urlForAudio = _step.value;
-
-	      var audio = new Audio();
-	      audio.onload = function () {
-	        var index = list.indexOf(this);
-	        if (index !== -1) {
-	          list.splice(index, 1);
-	        }
-	      };
-	      list.push(audio);
-	      audio.src = urlForAudio;
-	    }
-	  } catch (err) {
-	    _didIteratorError = true;
-	    _iteratorError = err;
-	  } finally {
-	    try {
-	      if (!_iteratorNormalCompletion && _iterator.return) {
-	        _iterator.return();
-	      }
-	    } finally {
-	      if (_didIteratorError) {
-	        throw _iteratorError;
-	      }
-	    }
-	  }
-	}
-
-	exports.preloadAudio = preloadAudio;
-
-/***/ },
 /* 304 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-	exports.Sounds = undefined;
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _entries = __webpack_require__(302);
-
-	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var urlForErrorAudio = 'http://172.16.208.7:1223';
-
-	var Sounds = function () {
-	  function Sounds(rulesList) {
-	    _classCallCheck(this, Sounds);
-
-	    // Looping through all props of 'rulesList' object ('username', 'email', etc.) and each key of props from 'rulesList' object set to  instance of 'Sounds' props.
-
-	    for (var rule in rulesList) {
-	      this[rule + '_required'] = urlForErrorAudio + '?text=' + window.encodeURIComponent(rulesList[rule].message);
-	    }
-	  }
-
-	  _createClass(Sounds, [{
-	    key: 'getList',
-	    value: function getList() {
-	      var soundsList = [];
-	      var _iteratorNormalCompletion = true;
-	      var _didIteratorError = false;
-	      var _iteratorError = undefined;
-
-	      try {
-	        for (var _iterator = (0, _entries.entries)(this)[Symbol.iterator](), _step; !(_iteratorNormalCompletion = (_step = _iterator.next()).done); _iteratorNormalCompletion = true) {
-	          var sound = _step.value;
-
-	          soundsList.push(sound);
-	        }
-	      } catch (err) {
-	        _didIteratorError = true;
-	        _iteratorError = err;
-	      } finally {
-	        try {
-	          if (!_iteratorNormalCompletion && _iterator.return) {
-	            _iterator.return();
-	          }
-	        } finally {
-	          if (_didIteratorError) {
-	            throw _iteratorError;
-	          }
-	        }
-	      }
-
-	      return soundsList;
-	    }
-	  }]);
-
-	  return Sounds;
-	}();
-
-	exports.Sounds = Sounds;
-
-/***/ },
-/* 305 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9152,15 +9099,13 @@
 
 	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-	var _FieldsForValidation = __webpack_require__(306);
+	var _FieldsForValidation = __webpack_require__(305);
 
-	var _entries = __webpack_require__(302);
+	var _entries = __webpack_require__(303);
 
-	var _Rules = __webpack_require__(301);
+	var _Sounds = __webpack_require__(302);
 
-	var _Sounds = __webpack_require__(304);
-
-	var _playInvalidField = __webpack_require__(307);
+	var _playInvalidField = __webpack_require__(306);
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
@@ -9174,10 +9119,9 @@
 
 	  _createClass(Form, [{
 	    key: 'checkForm',
-	    value: function checkForm(event) {
+	    value: function checkForm(event, rules) {
 	      var fieldsForValidation = new _FieldsForValidation.FieldsForValidation(this.selector);
-
-	      fieldsForValidation.checkFields.apply(null, [fieldsForValidation.fields, event, _Rules.rules]).then(function (index) {
+	      fieldsForValidation.checkFields.apply(null, [fieldsForValidation.fields, event, rules]).then(function (index) {
 	        if (index !== -1) {
 	          event.preventDefault();
 	          (0, _playInvalidField.playInvalidField)(index);
@@ -9198,7 +9142,7 @@
 	exports.Form = Form;
 
 /***/ },
-/* 306 */
+/* 305 */
 /***/ function(module, exports) {
 
 	"use strict";
@@ -9280,7 +9224,7 @@
 	            }
 	          }
 
-	          // If all field are valid, we resolving promise with -1 arg.
+	          // If all fields are valid, we resolving promise with -1 arg.
 	        } catch (err) {
 	          _didIteratorError2 = true;
 	          _iteratorError2 = err;
@@ -9307,7 +9251,7 @@
 	exports.FieldsForValidation = FieldsForValidation;
 
 /***/ },
-/* 307 */
+/* 306 */
 /***/ function(module, exports, __webpack_require__) {
 
 	'use strict';
@@ -9317,13 +9261,82 @@
 	});
 	exports.playInvalidField = undefined;
 
-	var _preload = __webpack_require__(303);
+	var _preload = __webpack_require__(301);
 
 	function playInvalidField(indexOfInvalid) {
 	  _preload.preloadAudio.list[indexOfInvalid].play();
 	}
 
 	exports.playInvalidField = playInvalidField;
+
+/***/ },
+/* 307 */
+/***/ function(module, exports, __webpack_require__) {
+
+	'use strict';
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	exports.Rules = undefined;
+
+	var _entries = __webpack_require__(303);
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Rules = function Rules(fieldsObj) {
+	  _classCallCheck(this, Rules);
+
+	  for (var field in fieldsObj) {
+	    this['' + field] = fieldsObj[field];
+	  }
+	};
+
+	exports.Rules = Rules;
+
+/***/ },
+/* 308 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+	var validateFunctions = {
+	  usernameValidation: function usernameValidation(fieldForValidation) {
+	    var username = fieldForValidation.value;
+	    var usernameFormat = /^\w+$/ig;
+	    if (username.match(usernameFormat)) {
+	      return true;
+	    } else {
+	      return false;
+	    }
+	  },
+	  passwordValidation: function passwordValidation(fieldForValidation) {
+	    var maxLength = 10;
+	    var minLength = 5;
+
+	    var password = fieldForValidation.value;
+	    var passwordLength = password.length;
+	    if (passwordLength === 0 || passwordLength < minLength || passwordLength > maxLength) {
+	      return false;
+	    } else {
+	      return true;
+	    }
+	  },
+	  emailValidation: function emailValidation(fieldForValidation) {
+	    var email = fieldForValidation.value;
+	    var emailFormat = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+	    if (!emailFormat.test(email)) {
+	      return false;
+	    } else {
+	      return true;
+	    }
+	  }
+	};
+
+	exports.validateFunctions = validateFunctions;
 
 /***/ }
 /******/ ]);

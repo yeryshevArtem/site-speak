@@ -14,10 +14,15 @@ class Form {
       if (index !== -1) {
         event.preventDefault();
         playInvalidField(index);
+
+        /* Sending 'post' request, that tells about fail finished order and gives
+        information about field, where detected error. */
+
       } else {
         alert("Ok!");
 
-        // Success! Submit form!
+        /* Sending 'post' request, that tells about success finished order and submitting form. */
+
       }
     }).catch(function (error) {
       alert(error);
