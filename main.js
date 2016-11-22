@@ -25,5 +25,22 @@ function callback() {
       }
     }
   );
-  speechForm("#myForm", rules);
+  // let resultOfValidation = [
+  //   {
+  //     id: 1,
+  //     name: 'email',
+  //     message: 'Incorrect email'
+  //   },
+  //   {
+  //     id: 2,
+  //     name: 'password',
+  //     message: 'Incorrect password'
+  //   },
+  //   {
+  //     id: 3,
+  //     name: 'login',
+  //     message: 'Incorrect login'
+  //   }
+  // ];
+  speechForm("#myForm", null, rules);
 }

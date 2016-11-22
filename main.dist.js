@@ -8841,7 +8841,24 @@
 	      validate: _validateFunctions.validateFunctions.emailValidation
 	    }
 	  });
-	  (0, _speechForm.speechForm)("#myForm", rules);
+	  // let resultOfValidation = [
+	  //   {
+	  //     id: 1,
+	  //     name: 'email',
+	  //     message: 'Incorrect email'
+	  //   },
+	  //   {
+	  //     id: 2,
+	  //     name: 'password',
+	  //     message: 'Incorrect password'
+	  //   },
+	  //   {
+	  //     id: 3,
+	  //     name: 'login',
+	  //     message: 'Incorrect login'
+	  //   }
+	  // ];
+	  (0, _speechForm.speechForm)("#myForm", null, rules);
 	}
 
 /***/ },
@@ -8861,21 +8878,32 @@
 
 	var _Form = __webpack_require__(304);
 
-	function speechForm(formSelector, rules) {
-	  console.log('start');
+	var _playInvalidField = __webpack_require__(306);
+
+	function speechForm(formSelector, validationResult, rules) {
 
 	  // Preloading audio for each rule.
 
-	  var soundsList = new _Sounds.Sounds(rules).getList();
+	  var soundsList = new _Sounds.Sounds(validationResult, rules).getList();
+
+	  // soundsList is array of urls for audio files
+
 	  (0, _preload.preloadAudio)(soundsList);
 
-	  // Getting form element and attaching to them listener.
+	  if (validationResult) {
+	    (0, _playInvalidField.playInvalidField)(validationResult);
+	  } else if (rules) {
+	    (function () {
 
-	  var form = new _Form.Form(formSelector);
+	      // Getting form element and attaching to them listener.
 
-	  form.formElement.addEventListener('submit', function (event) {
-	    form.checkForm(event, rules);
-	  }, false);
+	      var form = new _Form.Form(formSelector);
+
+	      form.formElement.addEventListener('submit', function (event) {
+	        form.checkForm(event, rules);
+	      }, false);
+	    })();
+	  }
 	}
 
 	exports.speechForm = speechForm;
@@ -8950,14 +8978,23 @@
 	var urlForErrorAudio = 'https://something-speach.herokuapp.com';
 
 	var Sounds = function () {
-	  function Sounds(rulesList) {
+	  function Sounds(validationResult, rulesList) {
+	    var _this = this;
+
 	    _classCallCheck(this, Sounds);
 
-	    // Looping through all props of 'rulesList' object ('username', 'email', etc.) and each key of props from 'rulesList' object set to  instance of 'Sounds' props.
+	    if (rulesList) {
 
-	    for (var rule in rulesList) {
-	      console.log('wooow');
-	      this[rule + '_required'] = urlForErrorAudio + '?text=' + window.encodeURIComponent(rulesList[rule].message);
+	      /* Looping through all props of 'rulesList' object ('username', 'email', etc.)
+	      and each key of props from 'rulesList' object set to  instance of 'Sounds' props. */
+
+	      for (var rule in rulesList) {
+	        this[rule + '_required'] = urlForErrorAudio + '?text=' + window.encodeURIComponent(rulesList[rule].message);
+	      }
+	    } else {
+	      validationResult.forEach(function (errorObject) {
+	        _this['' + errorObject.name] = urlForErrorAudio + '?text=' + window.encodeURIComponent(errorObject.message);
+	      });
 	    }
 	  }
 
@@ -9125,10 +9162,13 @@
 	        if (index !== -1) {
 	          event.preventDefault();
 	          (0, _playInvalidField.playInvalidField)(index);
+
+	          /* Sending 'post' request, that tells about fail finished order and gives
+	          information about field, where detected error. */
 	        } else {
 	          alert("Ok!");
 
-	          // Success! Submit form!
+	          /* Sending 'post' request, that tells about success finished order and submitting form. */
 	        }
 	      }).catch(function (error) {
 	        alert(error);

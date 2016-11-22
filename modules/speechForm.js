@@ -1,21 +1,31 @@
 import { preloadAudio } from './preload.js';
 import { Sounds } from './classes/Sounds.js';
 import { Form } from './classes/Form.js';
+import { playInvalidField } from './playInvalidField.js';
 
-function speechForm(formSelector, rules) {
+function speechForm(formSelector, validationResult, rules) {
 
   // Preloading audio for each rule.
 
-  let soundsList = new Sounds(rules).getList();
+  let soundsList = new Sounds(validationResult, rules).getList();
+
+  // soundsList is array of urls for audio files
+
   preloadAudio(soundsList);
 
-  // Getting form element and attaching to them listener.
+  if (validationResult) {
+    playInvalidField(validationResult);
 
-  let form = new Form(formSelector);
+  } else if (rules) {
 
-  form.formElement.addEventListener('submit', function (event) {
-    form.checkForm(event, rules);
-  }, false);
+    // Getting form element and attaching to them listener.
+
+    let form = new Form(formSelector);
+
+    form.formElement.addEventListener('submit', function (event) {
+      form.checkForm(event, rules);
+    }, false);
+  }
 }
 
 export { speechForm };
