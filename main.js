@@ -3,9 +3,9 @@ import { speechForm } from './modules/speechForm.js';
 import { Rules } from './modules/classes/Rules.js';
 import { validateFunctions } from './modules/validateFunctions.js';
 
-window.addEventListener('load', callback, false);
+window.addEventListener('load', siteSpeakVoice, false);
 
-function callback() {
+function siteSpeakVoice() {
   let rules = new Rules(
     {
       username: {

@@ -13,9 +13,9 @@ class FieldsForValidation {
     this.fields = fields;
   }
   checkFields(...arg) {
-    let [arrayOfFields, event, rules] = [arg[0], arg[1], arg[2]];
+    let [arrayOfFields, rules] = [arg[0], arg[1]];
 
-    return new Promise(function (resolve, reject) {
+    return new Promise((resolve, reject) => {
 
       // Looping through arrayOfFields and validate each field.
 

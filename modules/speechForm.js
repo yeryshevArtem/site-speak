@@ -23,7 +23,30 @@ function speechForm(formSelector, validationResult, rules) {
     let form = new Form(formSelector);
 
     form.formElement.addEventListener('submit', function (event) {
-      form.checkForm(event, rules);
+      form.checkForm(rules).then((resultOfValidation) => {
+
+        if (resultOfValidation !== -1) {
+
+          /* Validation is failed. Result of validation is the index of invalid field,
+           that falls into function 'playInvalidField' as input param. */
+
+          event.preventDefault();
+          playInvalidField(resultOfValidation);
+
+          /* Sending 'post' request, that tells about fail finished order and gives
+          information about field, where detected error. */
+
+        } else {
+
+          // Validation is success
+
+          alert("All fields are valid!");
+
+          /* Sending 'post' request, that tells about success finished order and submitting form. */
+
+        }
+      })
+
     }, false);
   }
 }
